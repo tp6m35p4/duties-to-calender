@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
   "name": "Duties To Calender",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Convert Duties into ics file for Calender APP.",
   "icons": {
     "16": "icons/icon_16.png",
     "32": "icons/icon_32.png",
-    "48": "icons/icon_48.png",
+    "48": "icons/icon_64.png",
     "128": "icons/icon_128.png"
   },
   "background": {

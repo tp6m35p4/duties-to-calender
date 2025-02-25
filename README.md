@@ -1,11 +1,11 @@
-# <img src="public/icons/icon_48.png" width="45" align="left"> Duties To Calender
+# <img src="public/icons/icon_64.png" width="45" align="left"> Duties To Calender
 
-My Chrome Extension
+Duties To Calender
 
 ## Features
 
-- Feature 1
-- Feature 2
+- Transfer duties to ics file
+  - Easliy import to Google Calender, Apple Calender
 
 ## Install
 
