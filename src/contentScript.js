@@ -33,7 +33,6 @@ function extractEvents(rows) {
     // export duty except dayoff
     const dayoffRegex = /DayOff*/i;
     if (!currentTds[2].textContent.match(dayoffRegex)) {
-      console.log(current);
 
       event[0] = currentTds[2].textContent; // Duty
       event[1] = currentTds[1].textContent; // Report Date

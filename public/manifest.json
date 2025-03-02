@@ -16,7 +16,7 @@
     "default_title": "Duties To Calender",
     "default_popup": "popup.html"
   },
-  "permissions": ["activeTab", "storage"],
+  "permissions": ["activeTab"],
   "content_scripts": [
     {
       "matches": ["https://itportal.merlot.aero/*"],

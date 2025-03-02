@@ -11,6 +11,7 @@ import './popup.css';
   // More information on Permissions can we found at
   // https://developer.chrome.com/extensions/declare_permissions
 
+
   document.getElementById('exportBtn').addEventListener('click', function () {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       chrome.tabs.sendMessage(
