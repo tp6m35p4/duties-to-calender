@@ -11,6 +11,7 @@ import moment from 'moment';
   // More information on Permissions can we found at
   // https://developer.chrome.com/extensions/declare_permissions
 
+<<<<<<< HEAD
   document
     .getElementById('exportBtn')
     .addEventListener('click', async function () {
@@ -42,5 +43,17 @@ import moment from 'moment';
           }
         );
       });
+=======
+
+  document.getElementById('exportBtn').addEventListener('click', function () {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      chrome.tabs.sendMessage(
+        tabs[0].id,
+        { type: 'exportCalendar' },
+        function (response) {
+          console.log('Response received');
+        }
+      );
+>>>>>>> e13901c7b61fa98e1da04df552c21f4441b6e227
     });
 })();
