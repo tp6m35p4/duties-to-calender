@@ -71,11 +71,11 @@ function extractROISEvents(rows) {
     let event = []; // Duty, Report Datetime, Release Datetime, Description
     let rosInfo = current.portalCalendarDetailRosterInfoVoList[0];
     event[0] = `${rosInfo.assignment}-${rosInfo.fltNum}-${rosInfo.dep}-${rosInfo.arp}`;
-    event[1] = current.startDateTime;
-    event[2] = current.endDateTime;
+    event[1] = moment(current.startDateTime).format('YYYYMMDDTHHmmss');
+    event[2] = moment(current.endDateTime).format('YYYYMMDDTHHmmss');
     event[3] = current.portalCalendarDetailRosterInfoVoList.reduce(
       (acc, curr) => {
-        const description = `${curr.fltNum} ${curr.dep} ${curr.fltStartTime}-${curr.arp} ${curr.fltEndTime}`;
+        const description = `${curr.fltNum} ${curr.dep} ${curr.fltStartTime}L - ${curr.arp} ${curr.fltEndTime}L`;
         return acc ? acc + '<br>' + description : description;
       },
       ''

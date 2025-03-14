@@ -43,7 +43,7 @@ function createICal(events) {
     icalData += `DTSTART;TZID=Asia/Taipei:${event[1]}\n`;
     icalData += `DTEND;TZID=Asia/Taipei:${event[2]}\n`;
     icalData += `DESCRIPTION:${event[3]}\n`;
-    icalData += `LOCATION:${event[4]}\n`;
+    // icalData += `LOCATION:${event[4]}\n`;
     icalData += 'END:VEVENT\n';
   });
 
