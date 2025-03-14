@@ -9,9 +9,13 @@ import moment from 'moment';
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.type === 'parseDuties') {
     // 執行數據提取和轉換
-    const e = parseDuties(request.payload.events);
-    const icalContent = createICal(e);
-
+    let icalContent = '';
+    if (request.sw) {
+      icalContent = createICal(request.payload.events);
+    } else {
+      const e = parseDuties(request.payload.events);
+      icalContent = createICal(e);
+    }
     // 發送回應給 popup
     sendResponse({ success: true, icalContent: icalContent });
     return true; // 必須返回 true 表示響應將是非同步的

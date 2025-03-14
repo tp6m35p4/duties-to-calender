@@ -33,8 +33,6 @@ function extractEvents(rows) {
     // export duty except dayoff
     const dayoffRegex = /DayOff*/i;
     if (!currentTds[2].textContent.match(dayoffRegex)) {
-      console.log(current);
-
       event[0] = currentTds[2].textContent; // Duty
       event[1] = currentTds[1].textContent; // Report Date
       event[2] = currentTds[5].textContent; // Report Time
@@ -65,32 +63,108 @@ function extractEvents(rows) {
   }
   return res;
 }
-// Listen for message
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'exportCalendar') {
-    const eventRows = document.querySelectorAll(
-      '.roster-report tbody tr td table tbody tr:not(.separator)'
-    );
-    const events = extractEvents(eventRows);
-    chrome.runtime.sendMessage(
-      {
-        type: 'parseDuties',
-        payload: {
-          events: events,
-        },
+
+function extractROISEvents(rows) {
+  const res = [];
+  for (let i = 0; i < rows.length; i++) {
+    const current = rows[i];
+    let event = []; // Duty, Report Datetime, Release Datetime, Description
+    let rosInfo = current.portalCalendarDetailRosterInfoVoList[0];
+    event[0] = `${rosInfo.assignment}-${rosInfo.fltNum}-${rosInfo.dep}-${rosInfo.arp}`;
+    event[1] = current.startDateTime;
+    event[2] = current.endDateTime;
+    event[3] = current.portalCalendarDetailRosterInfoVoList.reduce(
+      (acc, curr) => {
+        const description = `${curr.fltNum} ${curr.dep} ${curr.fltStartTime}-${curr.arp} ${curr.fltEndTime}`;
+        return acc ? acc + '<br>' + description : description;
       },
-      (response) => {
-        if (response.success) {
-          const now = moment();
-          downloadICalFile(
-            response.icalContent,
-            `${now.format('YYYYMMDD')}-duties.ics`
-          );
-        } else {
-          alert('Export error.');
-        }
-      }
+      ''
     );
+
+    res.push(event);
+  }
+  return res;
+}
+async function getRoster(start, end) {
+  const lifeData = JSON.parse(window.localStorage.lifeData);
+  const jwt = lifeData.vx_token;
+  const user = lifeData.vx_user;
+  let s = moment(start);
+  let e = moment(end);
+  const response = await fetch(
+    `https://crew-sg-prod.roiscloud.com/it/portal/api/api/rosterFlight/selectPortalCalendarDetailAll?crewId=${user}&startDateTime=${s.format(
+      'YYYY-MM-DDT00:00:00'
+    )}&endDateTime=${e.format('YYYY-MM-DDT23:59:59')}&type=c`,
+    {
+      headers: {
+        authorization: `Bearer ${jwt}`,
+      },
+    }
+  );
+  if (response.ok) {
+    return response.json();
+  } else {
+    return false;
+  }
+}
+// Listen for message
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+  if (request.type === 'exportCalendar') {
+    if (request.sw) {
+      console.log('ROIS');
+      const eventRows = await getRoster(
+        request.payload.start,
+        request.payload.end
+      );
+      if (eventRows) {
+        const events = extractROISEvents(eventRows.data);
+        chrome.runtime.sendMessage(
+          {
+            type: 'parseDuties',
+            payload: {
+              events: events,
+            },
+            sw: true,
+          },
+          (response) => {
+            if (response.success) {
+              const now = moment();
+              downloadICalFile(
+                response.icalContent,
+                `${now.format('YYYYMMDD')}-duties.ics`
+              );
+            } else {
+              alert('Export error.');
+            }
+          }
+        );
+      }
+    } else {
+      const eventRows = document.querySelectorAll(
+        '.roster-report tbody tr td table tbody tr:not(.separator)'
+      );
+      const events = extractEvents(eventRows);
+      chrome.runtime.sendMessage(
+        {
+          type: 'parseDuties',
+          payload: {
+            events: events,
+          },
+          sw: false,
+        },
+        (response) => {
+          if (response.success) {
+            const now = moment();
+            downloadICalFile(
+              response.icalContent,
+              `${now.format('YYYYMMDD')}-duties.ics`
+            );
+          } else {
+            alert('Export error.');
+          }
+        }
+      );
+    }
   }
 
   // Send an empty response
