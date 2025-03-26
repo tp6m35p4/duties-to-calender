@@ -73,25 +73,31 @@ function extractROISEvents(rows) {
       if (current['type'] == 'F') {
         let rosInfo = current.portalCalendarDetailRosterInfoVoList[0];
         event[0] = `${rosInfo.assignment}-${rosInfo.fltNum}-${rosInfo.dep}-${rosInfo.arp}`;
+        event[3] = current.portalCalendarDetailRosterInfoVoList.reduce(
+          (acc, curr) => {
+            const description = `${curr.fltNum} ${curr.dep} ${curr.fltStartTime}L - ${curr.arp} ${curr.fltEndTime}L`;
+            return acc ? acc + '<br>' + description : description;
+          },
+          ''
+        );
       } else if (current['type'] == 'G') {
         let rosInfo = current.portalCalendarDetailRosterGroundInfoVoList[0];
-        if (rosInfo.assignment == 'OFF') continue;
-        event[0] = `${rosInfo.assignment}-${rosInfo.fltNum}-${rosInfo.dep}-${rosInfo.arp}`;
+        if (
+          rosInfo.assignment == 'OFF' ||
+          rosInfo.assignment == 'DO' ||
+          rosInfo.assignment == 'NH'
+        )
+          continue;
+        event[0] = `${rosInfo.assignment}-${rosInfo.location}-${rosInfo.courseName}`;
       } else {
         continue;
       }
       event[1] = moment(current.startDateTime).format('YYYYMMDDTHHmmss');
       event[2] = moment(current.endDateTime).format('YYYYMMDDTHHmmss');
-      event[3] = current.portalCalendarDetailRosterInfoVoList.reduce(
-        (acc, curr) => {
-          const description = `${curr.fltNum} ${curr.dep} ${curr.fltStartTime}L - ${curr.arp} ${curr.fltEndTime}L`;
-          return acc ? acc + '<br>' + description : description;
-        },
-        ''
-      );
 
       res.push(event);
     } catch (e) {
+      console.error(e);
       continue;
     }
   }

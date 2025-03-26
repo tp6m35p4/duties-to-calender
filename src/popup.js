@@ -22,7 +22,6 @@ import moment from 'moment';
         : moment().endOf('month').format('YYYY-MM-DD');
 
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        console.log(tabs[0].url);
         chrome.tabs.sendMessage(
           tabs[0].id,
           {
