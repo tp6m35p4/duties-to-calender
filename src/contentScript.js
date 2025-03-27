@@ -71,7 +71,8 @@ function extractROISEvents(rows) {
     let event = []; // Duty, Report Datetime, Release Datetime, Description
     try {
       if (current['type'] == 'F') {
-        let rosInfo = current.portalCalendarDetailRosterInfoVoList[0];
+        let rosInfo = current?.portalCalendarDetailRosterInfoVoList[0];
+        if (!rosInfo) continue;
         event[0] = `${rosInfo.assignment}-${rosInfo.fltNum}-${rosInfo.dep}-${rosInfo.arp}`;
         event[3] = current.portalCalendarDetailRosterInfoVoList.reduce(
           (acc, curr) => {
@@ -81,8 +82,9 @@ function extractROISEvents(rows) {
           ''
         );
       } else if (current['type'] == 'G') {
-        let rosInfo = current.portalCalendarDetailRosterGroundInfoVoList[0];
+        let rosInfo = current?.portalCalendarDetailRosterGroundInfoVoList[0];
         if (
+          !rosInfo ||
           rosInfo.assignment == 'OFF' ||
           rosInfo.assignment == 'DO' ||
           rosInfo.assignment == 'NH'
@@ -156,6 +158,8 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
             }
           }
         );
+      } else {
+        alert('Fetch Data error.');
       }
     } else {
       const eventRows = document.querySelectorAll(
