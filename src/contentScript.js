@@ -114,7 +114,7 @@ function extractROISEvents(rows) {
   return res;
 }
 async function getRoster(start, end) {
-  const lifeData = JSON.parse(window.localStorage.lifeData);
+  const lifeData = JSON.parse(window.localStorage['PORTAL_it/portal_lifeData']);
   const jwt = lifeData.vx_token;
   const user = lifeData.vx_user;
   let s = moment(start);
